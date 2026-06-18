@@ -1,0 +1,418 @@
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body, .page { font-family: 'Inter', sans-serif; }
+.pf { font-family: 'Playfair Display', Georgia, serif; }
+
+.page {
+  background: #1a1714;
+  color: #e8e2d9;
+  min-height: 100vh;
+  width: 100%;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 2.5rem;
+  border-bottom: 0.5px solid rgba(212,175,55,0.2);
+  background: rgba(26,23,20,0.97);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  color: #d4af37;
+  letter-spacing: 0.04em;
+}
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+.nav-links a {
+  color: #b0a898;
+  text-decoration: none;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: #d4af37; }
+
+.location-bar {
+  background: rgba(212,175,55,0.08);
+  border-bottom: 0.5px solid rgba(212,175,55,0.15);
+  padding: 0.5rem 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: #8a7f72;
+}
+.location-bar i { color: #d4af37; font-size: 14px; }
+#visitor-loc { color: #c9b87a; font-weight: 500; }
+
+.hero {
+  background: linear-gradient(135deg, #f5f0e8 0%, #e8e4dc 50%, #d8d4cc 100%);
+  padding: 5rem 2.5rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 60% 40%, rgba(212,175,55,0.08) 0%, transparent 60%);
+}
+.hero-tag {
+  display: inline-block;
+  background: rgba(212,175,55,0.15);
+  color: #8a6f1a;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.35rem 1rem;
+  border-radius: 20px;
+  border: 0.5px solid rgba(212,175,55,0.3);
+  margin-bottom: 1.5rem;
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.2rem;
+  color: #1a1714;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+.hero h1 span { color: #8a6f1a; }
+.hero p {
+  color: #4a4540;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  max-width: 560px;
+  margin: 0 auto 2rem;
+  font-weight: 300;
+}
+.cta-btn {
+  background: #d4af37;
+  color: #1a1714;
+  border: none;
+  padding: 0.85rem 2.2rem;
+  border-radius: 40px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background 0.2s, transform 0.15s;
+  text-decoration: none;
+  display: inline-block;
+}
+.cta-btn:hover { background: #c9a82e; transform: translateY(-1px); }
+
+.section {
+  padding: 4rem 2.5rem;
+}
+.section-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #d4af37;
+  margin-bottom: 0.6rem;
+}
+.section h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #e8e2d9;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+.section p {
+  color: #8a7f72;
+  line-height: 1.75;
+  max-width: 680px;
+  font-size: 0.95rem;
+}
+
+.divider {
+  height: 0.5px;
+  background: rgba(212,175,55,0.15);
+  margin: 0 2.5rem;
+}
+
+.platforms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+.platform-card {
+  background: rgba(255,255,255,0.03);
+  border: 0.5px solid rgba(212,175,55,0.12);
+  border-radius: 14px;
+  padding: 1.5rem 1rem 1.2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  text-decoration: none;
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+.platform-card:hover {
+  border-color: rgba(212,175,55,0.4);
+  background: rgba(212,175,55,0.05);
+  transform: translateY(-2px);
+}
+.platform-card:hover .card-arrow { opacity: 1; }
+.card-arrow {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.8rem;
+  color: #d4af37;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.platform-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.8rem;
+}
+.platform-name {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #e8e2d9;
+  margin-bottom: 0.35rem;
+}
+.platform-desc {
+  font-size: 0.72rem;
+  color: #6a6058;
+  line-height: 1.5;
+}
+.login-badge {
+  display: inline-block;
+  margin-top: 0.65rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #d4af37;
+  border: 0.5px solid rgba(212,175,55,0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: 10px;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+.about-card {
+  background: rgba(255,255,255,0.02);
+  border: 0.5px solid rgba(212,175,55,0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+.about-card i {
+  font-size: 22px;
+  color: #d4af37;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+.about-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: #e8e2d9;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.about-card p {
+  font-size: 0.8rem;
+  color: #6a6058;
+  line-height: 1.65;
+  max-width: none;
+}
+
+footer {
+  padding: 2rem 2.5rem;
+  border-top: 0.5px solid rgba(212,175,55,0.12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+footer p { font-size: 0.78rem; color: #4a4540; }
+footer span { color: #d4af37; }
+</style>
+
+<div class="page">
+
+<nav>
+  <div class="nav-logo">ChatOnline</div>
+  <ul class="nav-links">
+    <li><a href="#news">News</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#" class="cta-btn" style="padding:0.45rem 1.2rem;font-size:0.78rem;">Let's Connect</a></li>
+  </ul>
+</nav>
+
+<div class="location-bar">
+  <i class="ti ti-map-pin" aria-hidden="true"></i>
+  <span>Welcome, visitor from</span>
+  <span id="visitor-loc">Montréal, Québec, Canada</span>
+  <span style="margin-left:auto;color:#4a4540;">Your gateway to every social platform</span>
+</div>
+
+<section class="hero">
+  <div class="hero-tag">Your Social Universe, One Place</div>
+  <h1 class="pf">Connect to the World<br><span>Through Social Media</span></h1>
+  <p>ChatOnline is your all-in-one destination to understand, access, and navigate every major social platform — from global networks to private messengers.</p>
+  <a href="#news" class="cta-btn">Let's Connect</a>
+</section>
+
+<div class="divider"></div>
+
+<section class="section" id="news">
+  <div class="section-label">Platforms</div>
+  <h2>Every Social Network, Explained</h2>
+  <p>Click any platform below to go directly to its login page. Each card explains what the platform is about and how it works.</p>
+
+  <div class="platforms-grid">
+
+    <a href="https://www.tiktok.com/login" target="_blank" class="platform-card">
+      <span class="card-arrow"><i class="ti ti-arrow-up-right" aria-hidden="true"></i></span>
+      <div class="platform-icon" style="background:#1a1a2e;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+          <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.77a4.85 4.85 0 01-1.01-.08z" fill="#ffffff"/>
+        </svg>
+      </div>
+      <div class="platform-name">TikTok</div>
+      <div class="platform-desc">Short-form video platform powered by an AI algorithm that learns what you love and serves non-stop entertainment.</div>
+      <div class="login-badge">→ Login</div>
+    </a>
+
+    <a href="https://www.facebook.com/login" target="_blank" class="platform-card">
+      <span class="card-arrow"><i class="ti ti-arrow-up-right" aria-hidden="true"></i></span>
+      <div class="platform-icon" style="background:#1877f2;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+      </div>
+      <div class="platform-name">Facebook</div>
+      <div class="platform-desc">The world's largest social network. Connect with friends, join groups, share life moments, and follow pages you love.</div>
+      <div class="login-badge">→ Login</div>
+    </a>
+
+    <a href="https://www.instagram.com/accounts/login" target="_blank" class="platform-card">
+      <span class="card-arrow"><i class="ti ti-arrow-up-right" aria-hidden="true"></i></span>
+      <div class="platform-icon" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+      </div>
+      <div class="platform-name">Instagram</div>
+      <div class="platform-desc">A visual-first platform for sharing photos, Reels, and Stories. Built for creators, brands, and everyday moments.</div>
+      <div class="login-badge">→ Login</div>
+    </a>
+
+    <a href="https://web.whatsapp.com" target="_blank" class="platform-card">
+      <span class="card-arrow"><i class="ti ti-arrow-up-right" aria-hidden="true"></i></span>
+      <div class="platform-icon" style="background:#25d366;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </div>
+      <div class="platform-name">WhatsApp</div>
+      <div class="platform-desc">End-to-end encrypted messaging app by Meta. Ideal for personal chats, voice/video calls, and group conversations.</div>
+      <div class="login-badge">→ Open Web</div>
+    </a>
+
+    <a href="https://accounts.snapchat.com" target="_blank" class="platform-card">
+      <span class="card-arrow"><i class="ti ti-arrow-up-right" aria-hidden="true"></i></span>
+      <div class="platform-icon" style="background:#fffc00;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#1a1714">
+          <path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12 1.033-.301.165-.088.344-.104.49-.104.268 0 .543.076.69.196.217.168.234.42-.026.571-.413.237-.957.342-1.468.426-.018.062-.008.12.052.198.145.192.387.374.58.459.249.114.354.261.293.37-.07.127-.28.196-.568.181-.12-.009-.252-.04-.399-.077-.343-.093-.765-.139-1.185.05-.123.059-.174.167-.16.253.022.141.044.28.053.432.047.729-.089 1.418-.47 1.974-.717 1.053-2.15 1.612-4.247 1.663-.014.005-.028.008-.042.008l-.007.001c-.014 0-.027-.003-.041-.008-.04-.005-.08-.009-.12-.009h-.04c-2.097-.051-3.53-.61-4.247-1.663-.381-.556-.517-1.245-.47-1.974.009-.152.031-.291.053-.432.014-.086-.037-.194-.16-.253-.42-.189-.842-.143-1.185-.05-.147.037-.279.068-.399.077-.288.015-.499-.054-.568-.181-.061-.109.044-.256.293-.37.193-.085.435-.267.58-.459.06-.078.07-.136.052-.198-.511-.084-1.055-.189-1.468-.426-.26-.151-.243-.403-.026-.571.147-.12.422-.196.69-.196.146 0 .325.016.49.104.374.181.733.285 1.033.301.198 0 .326-.045.401-.09l-.03-.51c-.104-1.628-.23-3.654.299-4.847C7.859 1.069 11.216.793 12.206.793z"/>
+        </svg>
+      </div>
+      <div class="platform-name">Snapchat</div>
+      <div class="platform-desc">Disappearing photo and video messages with fun AR lenses. Popular with Gen Z for authentic, unfiltered moments.</div>
+      <div class="login-badge">→ Login</div>
+    </a>
+
+    <a href="https://twitter.com/login" target="_blank" class="platform-card">
+      <span class="card-arrow"><i class="ti ti-arrow-up-right" aria-hidden="true"></i></span>
+      <div class="platform-icon" style="background:#000000;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+        </svg>
+      </div>
+      <div class="platform-name">X (Twitter)</div>
+      <div class="platform-desc">Real-time microblogging and public discourse. Share short posts, follow trends, and engage with global conversations.</div>
+      <div class="login-badge">→ Login</div>
+    </a>
+
+    <a href="https://web.telegram.org" target="_blank" class="platform-card">
+      <span class="card-arrow"><i class="ti ti-arrow-up-right" aria-hidden="true"></i></span>
+      <div class="platform-icon" style="background:#229ED9;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+          <path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+        </svg>
+      </div>
+      <div class="platform-name">Telegram</div>
+      <div class="platform-desc">Cloud-based messenger with bots, channels, and supergroups. Renowned for speed, privacy controls, and large group support.</div>
+      <div class="login-badge">→ Open App</div>
+    </a>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section" id="about">
+  <div class="section-label">About</div>
+  <h2>What is ChatOnline?</h2>
+  <p>ChatOnline is a modern digital hub dedicated to helping you understand and navigate the ever-evolving world of social media. Whether you're discovering a platform for the first time or reconnecting with one you love, we make it seamless.</p>
+
+  <div class="about-grid">
+    <div class="about-card">
+      <i class="ti ti-world" aria-hidden="true"></i>
+      <h3>Global Reach</h3>
+      <p>Social media connects over 5 billion people worldwide. We break down each network so you can choose where your voice belongs.</p>
+    </div>
+    <div class="about-card">
+      <i class="ti ti-shield-lock" aria-hidden="true"></i>
+      <h3>Privacy First</h3>
+      <p>We guide you toward platforms that respect your data, and explain how encryption and privacy settings work on each network.</p>
+    </div>
+    <div class="about-card">
+      <i class="ti ti-trending-up" aria-hidden="true"></i>
+      <h3>Stay Current</h3>
+      <p>Social media evolves fast. ChatOnline keeps you informed about the latest features, algorithm changes, and emerging platforms.</p>
+    </div>
+    <div class="about-card">
+      <i class="ti ti-users" aria-hidden="true"></i>
+      <h3>Community Driven</h3>
+      <p>Every platform is built around community. We help you find your tribe — whether it's creators, professionals, families, or activists.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 <span>ChatOnline</span> — Your Social Universe</p>
+  <p style="color:#4a4540;font-size:0.75rem;">Crafted with <span>♦</span> in Montréal</p>
+</footer>
+
+</div>
