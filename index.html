@@ -1,376 +1,596 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Find My Location</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TeamPin — Live Location Sharing</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --green: #1FAD61;
-    --green-dark: #168f4f;
-    --green-light: #e8faf0;
-    --bg: #f0f2f5;
-    --surface: #ffffff;
-    --border: rgba(0,0,0,0.08);
-    --text: #111827;
-    --muted: #6b7280;
-    --radius: 16px;
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --blue-mid: #378ADD;
+    --green: #0F6E56;
+    --green-light: #E1F5EE;
+    --coral: #D85A30;
+    --coral-light: #FAECE7;
+    --gray-bg: #F7F7F5;
+    --gray-border: #E2E0D8;
+    --text: #1A1A18;
+    --text-muted: #6B6963;
+    --white: #FFFFFF;
+    --radius: 12px;
+    --sidebar: 320px;
   }
 
   body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 24px 16px 48px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--gray-bg);
     color: var(--text);
-  }
-
-  header {
+    height: 100vh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-border);
+    padding: 0 1.25rem;
+    height: 56px;
+    display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 28px;
-    text-align: center;
-  }
-
-  .logo {
-    width: 56px; height: 56px;
-    border-radius: 16px;
-    background: var(--green);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px;
-  }
-
-  h1 { font-size: 22px; font-weight: 600; color: var(--text); }
-  header p { font-size: 14px; color: var(--muted); max-width: 300px; }
-
-  .card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    border: 0.5px solid var(--border);
-    padding: 24px;
-    width: 100%;
-    max-width: 480px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  }
-
-  .state { display: none; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
-  .state.active { display: flex; }
-
-  /* --- idle state --- */
-  #state-idle .icon-wrap {
-    width: 72px; height: 72px;
-    border-radius: 50%;
-    background: var(--green-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 32px;
-  }
-  #state-idle h2 { font-size: 17px; font-weight: 600; }
-  #state-idle p { font-size: 14px; color: var(--muted); max-width: 300px; }
-
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 13px 28px;
-    border-radius: 100px;
-    border: none;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 500;
-    font-family: 'Inter', sans-serif;
-    transition: background 0.15s, transform 0.1s;
-  }
-  .btn-primary { background: var(--green); color: #fff; }
-  .btn-primary:hover { background: var(--green-dark); }
-  .btn-primary:active { transform: scale(0.97); }
-  .btn-secondary {
-    background: transparent; color: var(--muted);
-    border: 0.5px solid var(--border);
-    font-size: 13px; padding: 9px 18px;
-  }
-  .btn-secondary:hover { background: var(--bg); }
-
-  /* --- loading state --- */
-  .spinner {
-    width: 48px; height: 48px;
-    border: 3px solid var(--green-light);
-    border-top-color: var(--green);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  #state-loading p { font-size: 14px; color: var(--muted); }
-
-  /* --- result state --- */
-  #state-result { align-items: stretch; }
-
-  .result-header {
-    display: flex; align-items: center; gap: 12px;
-    padding-bottom: 16px;
-    border-bottom: 0.5px solid var(--border);
-    margin-bottom: 16px;
-  }
-  .flag-circle {
-    width: 48px; height: 48px; border-radius: 50%;
-    background: var(--green-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 26px; flex-shrink: 0;
-  }
-  .result-header h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
-  .result-header span { font-size: 13px; color: var(--muted); }
-
-  .info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-bottom: 16px;
+    flex-shrink: 0;
+    z-index: 100;
   }
-  .info-item {
-    background: var(--bg);
-    border-radius: 12px;
-    padding: 12px 14px;
+  .topbar-logo {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 600; color: var(--blue);
   }
-  .info-label {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-  }
-  .info-value { font-size: 14px; font-weight: 500; color: var(--text); word-break: break-all; }
-  .info-item.wide { grid-column: 1 / -1; }
+  .topbar-logo svg { width: 24px; height: 24px; }
+  .topbar-sep { width: 1px; height: 22px; background: var(--gray-border); margin: 0 4px; }
+  .topbar-title { font-size: 14px; color: var(--text-muted); }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .share-toggle-wrap { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); }
+  .toggle { position: relative; width: 40px; height: 22px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: var(--gray-border); border-radius: 22px; transition: 0.2s; }
+  .toggle-slider:before { content: ""; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; }
+  .toggle input:checked + .toggle-slider { background: var(--blue-mid); }
+  .toggle input:checked + .toggle-slider:before { transform: translateX(18px); }
+  .you-badge { font-size: 12px; background: var(--blue-light); color: var(--blue); padding: 4px 10px; border-radius: 20px; font-weight: 500; }
 
-  .map-wrap {
-    border-radius: 12px;
+  /* LAYOUT */
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar);
+    background: var(--white);
+    border-right: 1px solid var(--gray-border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
     overflow: hidden;
-    border: 0.5px solid var(--border);
-    margin-bottom: 16px;
-    height: 200px;
-    background: #e8f0f8;
-    position: relative;
   }
-  .map-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+  .sidebar-header {
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--gray-border);
+  }
+  .sidebar-header h2 { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .search-box { position: relative; margin-top: 10px; }
+  .search-box input {
+    width: 100%; padding: 7px 12px 7px 34px;
+    border: 1px solid var(--gray-border); border-radius: 8px;
+    font-size: 13px; background: var(--gray-bg); color: var(--text); outline: none;
+  }
+  .search-box input:focus { border-color: var(--blue-mid); background: white; }
+  .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 15px; }
 
-  .accuracy-bar { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 16px; }
-  .accuracy-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .colleague-list { flex: 1; overflow-y: auto; padding: 8px 0; }
+  .colleague-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 1.25rem; cursor: pointer; transition: background 0.1s;
+  }
+  .colleague-item:hover { background: var(--gray-bg); }
+  .colleague-item.active { background: var(--blue-light); }
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; flex-shrink: 0; position: relative;
+  }
+  .avatar-dot {
+    position: absolute; bottom: 0; right: 0;
+    width: 10px; height: 10px; border-radius: 50%; border: 2px solid white;
+  }
+  .dot-online { background: #639922; }
+  .dot-offline { background: #B4B2A9; }
+  .colleague-info { flex: 1; min-width: 0; }
+  .colleague-name { font-size: 14px; font-weight: 500; }
+  .colleague-loc { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .colleague-time { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
 
-  .action-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .action-row .btn { flex: 1; min-width: 120px; }
+  .invite-section {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--gray-border);
+  }
+  .invite-section label { font-size: 12px; color: var(--text-muted); font-weight: 500; display: block; margin-bottom: 6px; }
+  .invite-row { display: flex; gap: 6px; }
+  .invite-row input {
+    flex: 1; padding: 7px 10px; font-size: 13px;
+    border: 1px solid var(--gray-border); border-radius: 8px;
+    background: var(--gray-bg); color: var(--text); outline: none;
+  }
+  .invite-row input:focus { border-color: var(--blue-mid); background: white; }
+  .invite-btn {
+    padding: 7px 12px; font-size: 13px; font-weight: 500;
+    background: var(--blue); color: white; border: none;
+    border-radius: 8px; cursor: pointer; white-space: nowrap;
+  }
+  .invite-btn:hover { background: #0C447C; }
 
-  /* --- error state --- */
-  .error-icon { font-size: 40px; }
-  #state-error h2 { font-size: 16px; font-weight: 600; }
-  #state-error p { font-size: 14px; color: var(--muted); max-width: 300px; }
+  /* MAP AREA */
+  .map-area { flex: 1; position: relative; }
+  #map { width: 100%; height: 100%; }
 
-  footer {
-    margin-top: 24px;
-    font-size: 12px;
-    color: var(--muted);
-    text-align: center;
+  /* MAP CONTROLS */
+  .map-controls {
+    position: absolute; top: 12px; right: 12px; z-index: 10;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .map-btn {
+    background: white; border: 1px solid var(--gray-border);
+    border-radius: 8px; padding: 8px 12px; font-size: 13px; font-weight: 500;
+    cursor: pointer; color: var(--text); display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .map-btn:hover { background: var(--gray-bg); }
+  .map-btn.primary { background: var(--blue); color: white; border-color: var(--blue); }
+  .map-btn.primary:hover { background: #0C447C; }
+
+  /* POPUP */
+  .popup-card {
+    position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+    background: white; border-radius: var(--radius); border: 1px solid var(--gray-border);
+    padding: 1rem 1.25rem; display: none; z-index: 20;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1); min-width: 260px;
+  }
+  .popup-card.visible { display: block; }
+  .popup-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .popup-name { font-size: 15px; font-weight: 600; }
+  .popup-status { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .popup-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .popup-field label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 2px; }
+  .popup-field span { font-size: 13px; font-weight: 500; }
+  .popup-close { position: absolute; top: 10px; right: 12px; background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-muted); line-height: 1; }
+
+  /* STATUS BAR */
+  .statusbar {
+    position: absolute; bottom: 12px; right: 12px; z-index: 10;
+    background: white; border: 1px solid var(--gray-border);
+    border-radius: 8px; padding: 6px 12px; font-size: 12px;
+    color: var(--text-muted); display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .pulse { width: 8px; height: 8px; border-radius: 50%; background: #639922; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* NO MAPS KEY FALLBACK */
+  .map-fallback {
+    width: 100%; height: 100%;
+    background: #e8f0e8;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 1rem; position: relative; overflow: hidden;
+  }
+  .map-fallback-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(var(--gray-border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--gray-border) 1px, transparent 1px);
+    background-size: 40px 40px; background-color: #EDF4EC; opacity: 0.6;
+  }
+  .map-fallback-msg {
+    background: white; border-radius: var(--radius); border: 1px solid var(--gray-border);
+    padding: 1.5rem 2rem; text-align: center; z-index: 1; max-width: 380px;
+  }
+  .map-fallback-msg h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .map-fallback-msg p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .map-fallback-msg code { background: var(--gray-bg); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--blue); }
+  .map-fallback-msg a { color: var(--blue); font-weight: 500; }
+
+  /* DEMO PINS on fallback */
+  .demo-pin {
+    position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 2;
+    cursor: pointer; transition: transform 0.15s;
+  }
+  .demo-pin:hover { transform: scale(1.1); }
+  .pin-bubble {
+    width: 36px; height: 36px; border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg); border: 3px solid white;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .pin-initials { transform: rotate(45deg); font-size: 11px; font-weight: 700; color: white; }
+  .pin-label {
+    margin-top: 6px; background: white; border-radius: 20px; padding: 3px 8px;
+    font-size: 11px; font-weight: 600; border: 1px solid var(--gray-border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1); white-space: nowrap;
   }
 
-  @media (max-width: 420px) {
-    .info-grid { grid-template-columns: 1fr; }
-    .info-item.wide { grid-column: 1; }
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: #1A1A18; color: white; padding: 10px 18px; border-radius: 8px;
+    font-size: 13px; z-index: 9999; opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
   }
+  .toast.show { opacity: 1; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">📍</div>
-  <h1>Find My Location</h1>
-  <p>See your current location, coordinates, and region instantly</p>
-</header>
-
-<div class="card">
-
-  <!-- IDLE -->
-  <div id="state-idle" class="state active">
-    <div class="icon-wrap">🌍</div>
-    <h2>Where are you right now?</h2>
-    <p>Click below and allow location access. Your browser handles everything — nothing is stored or shared.</p>
-    <button class="btn btn-primary" onclick="locate()">📡 &nbsp;Find my location</button>
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+      <circle cx="12" cy="9" r="2.5" fill="currentColor" stroke="none"/>
+    </svg>
+    TeamPin
   </div>
-
-  <!-- LOADING -->
-  <div id="state-loading" class="state">
-    <div class="spinner"></div>
-    <p>Getting your position…</p>
+  <div class="topbar-sep"></div>
+  <span class="topbar-title">Live team location sharing</span>
+  <div class="topbar-right">
+    <div class="share-toggle-wrap">
+      <span id="shareLabel">Share my location</span>
+      <label class="toggle">
+        <input type="checkbox" id="myShareToggle" onchange="toggleMyLocation(this)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="you-badge" id="myLocBadge">Off</div>
   </div>
+</div>
 
-  <!-- RESULT -->
-  <div id="state-result" class="state">
-    <div class="result-header">
-      <div class="flag-circle" id="r-flag">🏳️</div>
-      <div>
-        <h2 id="r-place">—</h2>
-        <span id="r-country">—</span>
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2>Team members</h2>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search colleagues..." id="searchInput" oninput="filterColleagues(this.value)">
       </div>
     </div>
 
-    <div class="info-grid">
-      <div class="info-item">
-        <div class="info-label">Latitude</div>
-        <div class="info-value" id="r-lat">—</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Longitude</div>
-        <div class="info-value" id="r-lng">—</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Altitude</div>
-        <div class="info-value" id="r-alt">—</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Accuracy</div>
-        <div class="info-value" id="r-acc">—</div>
-      </div>
-      <div class="info-item wide">
-        <div class="info-label">Address</div>
-        <div class="info-value" id="r-address">—</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Timezone</div>
-        <div class="info-value" id="r-tz">—</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Local time</div>
-        <div class="info-value" id="r-time">—</div>
-      </div>
-    </div>
+    <div class="colleague-list" id="colleagueList"></div>
 
-    <div class="map-wrap">
-      <iframe id="map-frame" src="" title="Map of your location" loading="lazy"></iframe>
-    </div>
-
-    <div class="accuracy-bar">
-      <div class="accuracy-dot"></div>
-      <span id="r-acc-note">Location found</span>
-    </div>
-
-    <div class="action-row">
-      <button class="btn btn-secondary" onclick="copyCoords()">📋 &nbsp;Copy coords</button>
-      <button class="btn btn-secondary" onclick="openMaps()">🗺️ &nbsp;Open in Maps</button>
-      <button class="btn btn-primary" onclick="locate()">🔄 &nbsp;Refresh</button>
+    <div class="invite-section">
+      <label>Invite a colleague</label>
+      <div class="invite-row">
+        <input type="email" id="inviteEmail" placeholder="colleague@company.com">
+        <button class="invite-btn" onclick="sendInvite()">Invite</button>
+      </div>
     </div>
   </div>
 
-  <!-- ERROR -->
-  <div id="state-error" class="state">
-    <div class="error-icon">🚫</div>
-    <h2 id="err-title">Location access denied</h2>
-    <p id="err-msg">Please allow location permission in your browser and try again.</p>
-    <button class="btn btn-primary" onclick="locate()">Try again</button>
+  <!-- MAP -->
+  <div class="map-area">
+    <div id="map"></div>
+
+    <div class="map-controls">
+      <button class="map-btn primary" onclick="centerOnMe()">📍 My location</button>
+      <button class="map-btn" onclick="fitAll()">👥 See all</button>
+      <button class="map-btn" onclick="showSetupGuide()">⚙️ Add API key</button>
+    </div>
+
+    <div class="statusbar">
+      <div class="pulse"></div>
+      <span id="statusText">2 colleagues sharing</span>
+    </div>
   </div>
 
 </div>
 
-<footer>Your location is only shown to you and never sent anywhere.</footer>
+<!-- POPUP CARD -->
+<div class="popup-card" id="popupCard">
+  <button class="popup-close" onclick="closePopup()">×</button>
+  <div class="popup-header">
+    <div class="avatar" id="popupAvatar"></div>
+    <div>
+      <div class="popup-name" id="popupName"></div>
+      <div class="popup-status" id="popupStatus"></div>
+    </div>
+  </div>
+  <div class="popup-fields">
+    <div class="popup-field">
+      <label>Latitude</label>
+      <span id="popupLat"></span>
+    </div>
+    <div class="popup-field">
+      <label>Longitude</label>
+      <span id="popupLng"></span>
+    </div>
+    <div class="popup-field">
+      <label>Location</label>
+      <span id="popupCity"></span>
+    </div>
+    <div class="popup-field">
+      <label>Updated</label>
+      <span id="popupTime"></span>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-let lat = null, lng = null;
+// ─── DATA ───────────────────────────────────────────────
+const COLLEAGUES = [
+  { id: 1, name: "Ana Popescu",    initials: "AP", color: "#0F6E56", bgColor: "#E1F5EE", lat: 44.4378, lng: 26.0970, city: "Bucharest, Sector 1", time: "2 min ago",  sharing: true  },
+  { id: 2, name: "Mihai Ionescu",  initials: "MI", color: "#185FA5", bgColor: "#E6F1FB", lat: 46.7712, lng: 23.6236, city: "Cluj-Napoca",          time: "8 min ago",  sharing: true  },
+  { id: 3, name: "Radu Dumitrescu",initials: "RD", color: "#6B6963", bgColor: "#F1EFE8", lat: null,    lng: null,    city: "—",                    time: "Not sharing",sharing: false },
+  { id: 4, name: "Elena Stancu",   initials: "ES", color: "#993C1D", bgColor: "#FAECE7", lat: 45.7489, lng: 21.2087, city: "Timișoara",            time: "Just now",   sharing: true  },
+  { id: 5, name: "Andrei Marin",   initials: "AM", color: "#3B6D11", bgColor: "#EAF3DE", lat: 44.1598, lng: 28.6348, city: "Constanța",            time: "15 min ago", sharing: true  },
+];
 
-function show(id) {
-  ['state-idle','state-loading','state-result','state-error'].forEach(s => {
-    document.getElementById(s).classList.remove('active');
-  });
-  document.getElementById(id).classList.add('active');
+let myLat = null, myLng = null;
+let map = null, markers = {};
+let googleMapsLoaded = false;
+
+// ─── SIDEBAR ────────────────────────────────────────────
+function renderSidebar(filter = "") {
+  const list = document.getElementById("colleagueList");
+  list.innerHTML = "";
+  COLLEAGUES
+    .filter(c => c.name.toLowerCase().includes(filter.toLowerCase()))
+    .forEach(c => {
+      const item = document.createElement("div");
+      item.className = "colleague-item";
+      item.id = "ci-" + c.id;
+      item.onclick = () => focusColleague(c);
+      item.innerHTML = `
+        <div class="avatar" style="background:${c.bgColor};color:${c.color}">
+          ${c.initials}
+          <div class="avatar-dot ${c.sharing ? 'dot-online' : 'dot-offline'}"></div>
+        </div>
+        <div class="colleague-info">
+          <div class="colleague-name">${c.name}</div>
+          <div class="colleague-loc">${c.sharing ? '📍 ' + c.city : '📵 Not sharing'}</div>
+        </div>
+        <div class="colleague-time">${c.time}</div>
+      `;
+      list.appendChild(item);
+    });
+  const sharing = COLLEAGUES.filter(c => c.sharing).length;
+  document.getElementById("statusText").textContent = `${sharing} colleague${sharing !== 1 ? 's' : ''} sharing`;
 }
 
-function locate() {
-  if (!navigator.geolocation) {
-    document.getElementById('err-title').textContent = 'Not supported';
-    document.getElementById('err-msg').textContent = 'Your browser does not support geolocation.';
-    show('state-error'); return;
+function filterColleagues(v) { renderSidebar(v); }
+
+function focusColleague(c) {
+  document.querySelectorAll(".colleague-item").forEach(el => el.classList.remove("active"));
+  const el = document.getElementById("ci-" + c.id);
+  if (el) el.classList.add("active");
+  if (c.sharing && c.lat) {
+    showPopup(c);
+    if (googleMapsLoaded && map) {
+      map.setCenter({ lat: c.lat, lng: c.lng });
+      map.setZoom(12);
+    } else {
+      updateFallbackFocus(c);
+    }
   }
-  show('state-loading');
-  navigator.geolocation.getCurrentPosition(onSuccess, onError, {
-    enableHighAccuracy: true, timeout: 12000, maximumAge: 0
-  });
 }
 
-async function onSuccess(pos) {
-  lat = pos.coords.latitude;
-  lng = pos.coords.longitude;
-  const acc = pos.coords.accuracy;
-  const alt = pos.coords.altitude;
+// ─── POPUP ──────────────────────────────────────────────
+function showPopup(c) {
+  document.getElementById("popupAvatar").style.cssText = `background:${c.bgColor};color:${c.color};width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600`;
+  document.getElementById("popupAvatar").textContent = c.initials;
+  document.getElementById("popupName").textContent = c.name;
+  document.getElementById("popupStatus").textContent = c.sharing ? "Sharing location" : "Not sharing";
+  document.getElementById("popupLat").textContent = c.lat ? c.lat.toFixed(4) : "—";
+  document.getElementById("popupLng").textContent = c.lng ? c.lng.toFixed(4) : "—";
+  document.getElementById("popupCity").textContent = c.city;
+  document.getElementById("popupTime").textContent = c.time;
+  document.getElementById("popupCard").classList.add("visible");
+}
 
-  document.getElementById('r-lat').textContent = lat.toFixed(6);
-  document.getElementById('r-lng').textContent = lng.toFixed(6);
-  document.getElementById('r-alt').textContent = alt != null ? Math.round(alt) + ' m' : 'N/A';
-  document.getElementById('r-acc').textContent = Math.round(acc) + ' m';
-  document.getElementById('r-tz').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  document.getElementById('r-time').textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  document.getElementById('r-acc-note').textContent = `Accurate to within ${Math.round(acc)} metres`;
+function closePopup() {
+  document.getElementById("popupCard").classList.remove("visible");
+  document.querySelectorAll(".colleague-item").forEach(el => el.classList.remove("active"));
+}
 
-  document.getElementById('map-frame').src =
-    `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.01},${lat-0.01},${lng+0.01},${lat+0.01}&layer=mapnik&marker=${lat},${lng}`;
-
-  try {
-    const geo = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
-    const d = await geo.json();
-    const a = d.address || {};
-    const city = a.city || a.town || a.village || a.county || '';
-    const country = a.country || '';
-    const state = a.state || a.region || '';
-    const road = a.road ? a.road + (a.house_number ? ' ' + a.house_number : '') : '';
-    const postcode = a.postcode || '';
-
-    document.getElementById('r-place').textContent = [city, state].filter(Boolean).join(', ') || country || 'Unknown place';
-    document.getElementById('r-country').textContent = country;
-    document.getElementById('r-address').textContent = [road, city, postcode, country].filter(Boolean).join(', ') || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-
-    const countryCode = (a.country_code || '').toUpperCase();
-    const flag = countryCode.length === 2
-      ? String.fromCodePoint(...[...countryCode].map(c => 0x1F1E0 - 65 + c.charCodeAt(0)))
-      : '📍';
-    document.getElementById('r-flag').textContent = flag;
-  } catch {
-    document.getElementById('r-place').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-    document.getElementById('r-country').textContent = 'Could not reverse geocode';
-    document.getElementById('r-address').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-    document.getElementById('r-flag').textContent = '📍';
+// ─── MY LOCATION ────────────────────────────────────────
+function toggleMyLocation(cb) {
+  const badge = document.getElementById("myLocBadge");
+  if (cb.checked) {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        myLat = pos.coords.latitude;
+        myLng = pos.coords.longitude;
+        badge.textContent = `${myLat.toFixed(3)}, ${myLng.toFixed(3)}`;
+        badge.style.background = "#E1F5EE"; badge.style.color = "#0F6E56";
+        showToast("Your location is now shared with the team");
+        if (googleMapsLoaded && map) addMyMarker();
+      }, () => {
+        cb.checked = false;
+        badge.textContent = "Denied";
+        showToast("Location access was denied by the browser");
+      });
+    }
+  } else {
+    myLat = null; myLng = null;
+    badge.textContent = "Off";
+    badge.style.background = ""; badge.style.color = "";
+    showToast("Stopped sharing your location");
+    if (googleMapsLoaded && markers["me"]) {
+      markers["me"].setMap(null);
+      delete markers["me"];
+    }
   }
-
-  show('state-result');
 }
 
-function onError(err) {
-  const msgs = {
-    1: ['Permission denied', 'Please allow location access in your browser settings, then try again.'],
-    2: ['Position unavailable', 'Your device could not determine your location. Try again or check your GPS settings.'],
-    3: ['Request timed out', 'It took too long to get your location. Move to a better signal area and try again.'],
-  };
-  const [title, msg] = msgs[err.code] || ['Unknown error', 'Something went wrong. Please try again.'];
-  document.getElementById('err-title').textContent = title;
-  document.getElementById('err-msg').textContent = msg;
-  show('state-error');
+function centerOnMe() {
+  if (myLat && map) {
+    map.setCenter({ lat: myLat, lng: myLng });
+    map.setZoom(13);
+  } else if (myLat === null) {
+    showToast("Enable location sharing first (top-right toggle)");
+  }
 }
 
-function copyCoords() {
-  if (lat == null) return;
-  navigator.clipboard.writeText(`${lat.toFixed(6)}, ${lng.toFixed(6)}`).then(() => {
-    const btn = event.target;
-    const orig = btn.innerHTML;
-    btn.innerHTML = '✅ &nbsp;Copied!';
-    setTimeout(() => btn.innerHTML = orig, 2000);
+function fitAll() {
+  if (!googleMapsLoaded || !map) return;
+  const bounds = new google.maps.LatLngBounds();
+  COLLEAGUES.filter(c => c.sharing && c.lat).forEach(c => bounds.extend({ lat: c.lat, lng: c.lng }));
+  if (myLat) bounds.extend({ lat: myLat, lng: myLng });
+  map.fitBounds(bounds, 60);
+}
+
+// ─── GOOGLE MAPS ─────────────────────────────────────────
+function initMap() {
+  googleMapsLoaded = true;
+  const mapEl = document.getElementById("map");
+  mapEl.innerHTML = "";
+
+  map = new google.maps.Map(mapEl, {
+    center: { lat: 45.9, lng: 24.9 },
+    zoom: 6,
+    styles: [
+      { featureType: "poi", stylers: [{ visibility: "off" }] },
+      { featureType: "transit", stylers: [{ visibility: "off" }] },
+    ],
+    mapTypeControl: false,
+    streetViewControl: false,
+    fullscreenControl: false,
+    zoomControl: true,
+  });
+
+  COLLEAGUES.filter(c => c.sharing && c.lat).forEach(c => {
+    const marker = new google.maps.Marker({
+      position: { lat: c.lat, lng: c.lng },
+      map,
+      title: c.name,
+      label: { text: c.initials, color: "white", fontWeight: "bold", fontSize: "11px" },
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 18,
+        fillColor: c.color,
+        fillOpacity: 1,
+        strokeColor: "white",
+        strokeWeight: 2.5,
+      }
+    });
+    marker.addListener("click", () => focusColleague(c));
+    markers[c.id] = marker;
   });
 }
 
-function openMaps() {
-  if (lat == null) return;
-  window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+function addMyMarker() {
+  if (markers["me"]) markers["me"].setMap(null);
+  markers["me"] = new google.maps.Marker({
+    position: { lat: myLat, lng: myLng },
+    map,
+    title: "You",
+    label: { text: "You", color: "white", fontWeight: "bold", fontSize: "10px" },
+    icon: {
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: 18,
+      fillColor: "#378ADD",
+      fillOpacity: 1,
+      strokeColor: "white",
+      strokeWeight: 3,
+    },
+    zIndex: 999,
+  });
+  map.setCenter({ lat: myLat, lng: myLng });
+  map.setZoom(13);
 }
+
+// ─── FALLBACK MAP (no API key) ───────────────────────────
+function renderFallbackMap() {
+  const mapEl = document.getElementById("map");
+  mapEl.innerHTML = `
+    <div class="map-fallback">
+      <div class="map-fallback-grid"></div>
+      ${COLLEAGUES.filter(c => c.sharing && c.lat).map((c, i) => `
+        <div class="demo-pin" style="left:${20 + i*18}%;top:${30 + (i%2)*20}%" onclick="focusColleague_byId(${c.id})">
+          <div class="pin-bubble" style="background:${c.color}">
+            <span class="pin-initials">${c.initials}</span>
+          </div>
+          <div class="pin-label">${c.name.split(' ')[0]}</div>
+        </div>
+      `).join('')}
+      <div class="map-fallback-msg">
+        <h3>📍 Add your Google Maps API key</h3>
+        <p>To show a real interactive map, add your key by clicking <strong>⚙️ Add API key</strong> above,<br>or open this file and replace <code>YOUR_GOOGLE_MAPS_API_KEY</code> in the script tag at the bottom.</p>
+        <p style="margin-top:10px"><a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank">Get a free API key →</a></p>
+      </div>
+    </div>
+  `;
+}
+
+function focusColleague_byId(id) {
+  const c = COLLEAGUES.find(x => x.id === id);
+  if (c) focusColleague(c);
+}
+
+function updateFallbackFocus(c) {
+  showToast(`Focused on ${c.name} — ${c.city}`);
+}
+
+// ─── INVITE ─────────────────────────────────────────────
+function sendInvite() {
+  const email = document.getElementById("inviteEmail").value.trim();
+  if (!email || !email.includes("@")) { showToast("Enter a valid email address"); return; }
+  showToast(`Invite link sent to ${email}`);
+  document.getElementById("inviteEmail").value = "";
+}
+
+// ─── SETUP GUIDE ────────────────────────────────────────
+function showSetupGuide() {
+  const key = prompt("Paste your Google Maps API key here:");
+  if (key && key.length > 10) {
+    showToast("Reload the page after replacing YOUR_GOOGLE_MAPS_API_KEY in the HTML file");
+  }
+}
+
+// ─── TOAST ──────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+// ─── INIT ────────────────────────────────────────────────
+renderSidebar();
+
+window.addEventListener("load", () => {
+  if (typeof google === "undefined" || !google.maps) {
+    renderFallbackMap();
+  }
+});
 </script>
+
+<!--
+  ╔══════════════════════════════════════════════════════════╗
+  ║  GOOGLE MAPS SETUP                                       ║
+  ║  1. Get a free API key:                                  ║
+  ║     https://developers.google.com/maps/javascript/get-api-key
+  ║  2. Replace YOUR_GOOGLE_MAPS_API_KEY below               ║
+  ║  3. Save and open this file in your browser              ║
+  ╚══════════════════════════════════════════════════════════╝
+-->
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap"
+  async defer
+  onerror="renderFallbackMap()">
+</script>
+
 </body>
 </html>
