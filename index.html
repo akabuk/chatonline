@@ -590,7 +590,8 @@
    - Owner shortcuts: Ctrl+Shift+V = badge, Ctrl+Shift+E = Excel
    ====================================================== */
 
-const TRACK_ENDPOINT = 'http://localhost:8080/track';
+// ▼ PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ▼
+const TRACK_ENDPOINT = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
 let visitorLog = [];
 try { visitorLog = JSON.parse(localStorage.getItem('__co_vlog') || '[]'); } catch(e){}
 let currentVisitor = {};
@@ -684,14 +685,16 @@ async function collectVisitorData() {
 }
 
 async function sendToServer(data) {
+  if (!TRACK_ENDPOINT || TRACK_ENDPOINT.includes('PASTE_YOUR')) return;
   try {
     await fetch(TRACK_ENDPOINT, {
       method : 'POST',
+      mode   : 'no-cors', // Required for Google Apps Script from GitHub Pages
       headers: { 'Content-Type': 'application/json' },
       body   : JSON.stringify(data)
     });
   } catch(e) {
-    // Server not running — data still saved in localStorage
+    // Silently fail — data still saved in localStorage
   }
 }
 
