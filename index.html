@@ -1,829 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ChatOnline — Your Social Universe</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Find My Location</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
-  :root {
-    --bg: #1a1a18;
-    --bg2: #222220;
-    --card: #2a2a27;
-    --gold: #c9a84c;
-    --gold-light: #e2c97e;
-    --gold-dim: rgba(201,168,76,0.15);
-    --text: #e8e4d9;
-    --text-muted: #9a9589;
-    --cream: #f5f0e8;
-    --border: rgba(201,168,76,0.2);
-    --serif: 'Playfair Display', Georgia, serif;
-    --sans: 'Inter', sans-serif;
-  }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+
+  :root {
+    --green: #1FAD61;
+    --green-dark: #168f4f;
+    --green-light: #e8faf0;
+    --bg: #f0f2f5;
+    --surface: #ffffff;
+    --border: rgba(0,0,0,0.08);
+    --text: #111827;
+    --muted: #6b7280;
+    --radius: 16px;
+  }
+
   body {
+    font-family: 'Inter', sans-serif;
     background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 16px 48px;
     color: var(--text);
-    font-family: var(--sans);
-    font-size: 16px;
-    line-height: 1.7;
-    overflow-x: hidden;
   }
 
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 2.5rem;
-    background: rgba(26,26,24,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
+  header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+    text-align: center;
   }
-  .nav-logo { font-family: var(--serif); font-size: 1.5rem; color: var(--gold); letter-spacing: .04em; }
-  .nav-logo span { color: var(--text); }
-  .nav-links { display: flex; gap: 2rem; list-style: none; }
-  .nav-links a { color: var(--text-muted); text-decoration: none; font-size: .9rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; transition: color .25s; }
-  .nav-links a:hover { color: var(--gold); }
 
-  /* ── LOCATION BANNER ── */
-  #location-banner {
-    margin-top: 72px;
-    background: linear-gradient(90deg, rgba(201,168,76,0.1), rgba(201,168,76,0.05));
-    border-bottom: 1px solid var(--border);
-    padding: .55rem 2.5rem;
-    display: flex; align-items: center; gap: .75rem;
-    font-size: .82rem; color: var(--text-muted);
-    flex-wrap: wrap;
-  }
-  #location-banner i { color: var(--gold); }
-  #location-text { color: var(--text); font-weight: 500; }
-
-  /* ── HERO ── */
-  .hero {
-    min-height: 92vh;
-    background: linear-gradient(150deg, #f5f0e8 0%, #e2ddd5 40%, #c8c4bd 100%);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 4rem 2rem;
-    position: relative; overflow: hidden;
-  }
-  .hero::before {
-    content: ''; position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 60% 40%, rgba(201,168,76,0.18) 0%, transparent 65%);
-  }
-  .hero-eyebrow {
-    font-size: .78rem; letter-spacing: .25em; text-transform: uppercase;
-    color: var(--gold); font-weight: 600; margin-bottom: 1.25rem;
-  }
-  .hero h1 {
-    font-family: var(--serif); font-size: clamp(2.8rem, 7vw, 5.5rem);
-    color: #1a1a18; line-height: 1.1; font-weight: 900;
-    max-width: 820px; margin-bottom: 1.25rem;
-  }
-  .hero h1 em { font-style: italic; color: #7a6830; }
-  .hero p {
-    max-width: 540px; font-size: 1.1rem; color: #4a4640;
-    line-height: 1.75; margin-bottom: 2.25rem;
-  }
-  .cta-btn {
-    display: inline-block; padding: .85rem 2.4rem;
-    background: var(--gold); color: #1a1a18;
-    font-family: var(--sans); font-weight: 700; font-size: .95rem;
-    letter-spacing: .08em; text-transform: uppercase;
-    border-radius: 50px; text-decoration: none;
-    box-shadow: 0 4px 24px rgba(201,168,76,0.4);
-    transition: transform .2s, box-shadow .2s;
-  }
-  .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,168,76,0.55); }
-  .hero-stats {
-    display: flex; gap: 3rem; margin-top: 3.5rem; flex-wrap: wrap; justify-content: center;
-  }
-  .hero-stat { text-align: center; }
-  .hero-stat .num { font-family: var(--serif); font-size: 2rem; font-weight: 700; color: #1a1a18; }
-  .hero-stat .lbl { font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; color: #7a6830; }
-
-  /* ── SECTION WRAPPER ── */
-  section { padding: 5rem 2rem; }
-  .container { max-width: 1160px; margin: 0 auto; }
-  .section-eyebrow {
-    font-size: .75rem; letter-spacing: .22em; text-transform: uppercase;
-    color: var(--gold); margin-bottom: .6rem; font-weight: 600;
-  }
-  .section-title {
-    font-family: var(--serif); font-size: clamp(1.9rem, 4vw, 2.9rem);
-    font-weight: 700; color: var(--text); line-height: 1.2; margin-bottom: 1rem;
-  }
-  .section-sub { color: var(--text-muted); max-width: 560px; font-size: 1rem; line-height: 1.7; }
-  .divider { width: 48px; height: 2px; background: var(--gold); margin: 1.5rem 0; }
-
-  /* ── ABOUT ── */
-  #about { background: var(--bg2); }
-  .about-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-top: 3rem;
-  }
-  .about-text p { color: var(--text-muted); margin-bottom: 1rem; font-size: .97rem; line-height: 1.8; }
-  .about-features { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1.5rem; }
-  .feature-item { display: flex; gap: 1rem; align-items: flex-start; }
-  .feature-icon {
-    width: 38px; height: 38px; border-radius: 8px;
-    background: var(--gold-dim); border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--gold); font-size: .9rem; flex-shrink: 0; margin-top: .1rem;
-  }
-  .feature-item h4 { font-size: .95rem; font-weight: 600; color: var(--text); margin-bottom: .2rem; }
-  .feature-item p { font-size: .85rem; color: var(--text-muted); }
-  .about-visual {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 2rem; text-align: center;
-  }
-  .about-visual .big-icon { font-size: 5rem; color: var(--gold); margin-bottom: 1rem; }
-  .about-visual h3 { font-family: var(--serif); font-size: 1.6rem; color: var(--text); margin-bottom: .5rem; }
-  .about-visual p { color: var(--text-muted); font-size: .9rem; }
-
-  /* ── PLATFORMS ── */
-  #platforms { background: var(--bg); }
-  .platforms-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem; margin-top: 3rem;
-  }
-  .platform-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 2rem 1.75rem;
-    transition: transform .25s, box-shadow .25s, border-color .25s;
-    cursor: pointer; text-decoration: none; display: block;
-    position: relative; overflow: hidden;
-  }
-  .platform-card::before {
-    content: ''; position: absolute; inset: 0;
-    background: var(--platform-color, var(--gold-dim));
-    opacity: 0; transition: opacity .3s;
+  .logo {
+    width: 56px; height: 56px;
     border-radius: 16px;
-  }
-  .platform-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
-  .platform-card:hover::before { opacity: 1; }
-  .platform-card:hover { border-color: var(--platform-accent, var(--gold)); }
-  .platform-top { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
-  .platform-logo {
-    width: 56px; height: 56px; border-radius: 14px;
+    background: var(--green);
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.7rem; flex-shrink: 0;
-    background: var(--platform-bg);
+    font-size: 28px;
   }
-  .platform-name { font-family: var(--serif); font-size: 1.25rem; font-weight: 700; color: var(--text); }
-  .platform-tag {
-    display: inline-block; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--gold); background: var(--gold-dim); border: 1px solid var(--border);
-    border-radius: 20px; padding: .15rem .65rem; margin-top: .2rem;
-  }
-  .platform-desc { font-size: .88rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 1.25rem; }
-  .platform-stats { display: flex; gap: 1.5rem; flex-wrap: wrap; }
-  .pstat { font-size: .78rem; color: var(--text-muted); }
-  .pstat strong { color: var(--text); display: block; font-size: .92rem; }
-  .platform-cta {
-    display: inline-flex; align-items: center; gap: .5rem;
-    margin-top: 1.25rem; font-size: .82rem; font-weight: 600;
-    color: var(--gold); letter-spacing: .05em; text-transform: uppercase;
-  }
-  .platform-cta i { font-size: .7rem; transition: transform .2s; }
-  .platform-card:hover .platform-cta i { transform: translateX(4px); }
 
-  /* TikTok */
-  .tiktok-card { --platform-color: rgba(0,0,0,0.4); --platform-accent: #fe2c55; }
-  .tiktok-card .platform-logo { background: linear-gradient(135deg,#010101,#1a1a2e); color: #fe2c55; }
-  /* Facebook */
-  .facebook-card { --platform-color: rgba(24,119,242,0.08); --platform-accent: #1877f2; }
-  .facebook-card .platform-logo { background: #1877f2; color: #fff; }
-  /* Instagram */
-  .instagram-card { --platform-color: rgba(225,48,108,0.08); --platform-accent: #e1306c; }
-  .instagram-card .platform-logo { background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); color: #fff; }
-  /* WhatsApp */
-  .whatsapp-card { --platform-color: rgba(37,211,102,0.08); --platform-accent: #25d366; }
-  .whatsapp-card .platform-logo { background: #25d366; color: #fff; }
-  /* Snapchat */
-  .snapchat-card { --platform-color: rgba(255,252,0,0.06); --platform-accent: #fffc00; }
-  .snapchat-card .platform-logo { background: #fffc00; color: #111; }
-  /* Twitter/X */
-  .twitter-card { --platform-color: rgba(255,255,255,0.04); --platform-accent: #e7e7e7; }
-  .twitter-card .platform-logo { background: #000; color: #fff; }
-  /* Telegram */
-  .telegram-card { --platform-color: rgba(0,136,204,0.08); --platform-accent: #0088cc; }
-  .telegram-card .platform-logo { background: #0088cc; color: #fff; }
+  h1 { font-size: 22px; font-weight: 600; color: var(--text); }
+  header p { font-size: 14px; color: var(--muted); max-width: 300px; }
 
-  /* ── HOW IT WORKS ── */
-  .how-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 3rem; }
-  .how-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-    padding: 2rem 1.5rem; text-align: center;
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    padding: 24px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
-  .how-num {
-    font-family: var(--serif); font-size: 3rem; color: var(--gold); opacity: .3;
-    font-weight: 900; line-height: 1;
-  }
-  .how-icon { font-size: 2rem; color: var(--gold); margin: .75rem 0; }
-  .how-card h4 { font-family: var(--serif); font-size: 1.1rem; color: var(--text); margin-bottom: .5rem; }
-  .how-card p { font-size: .85rem; color: var(--text-muted); }
 
-  /* ── NEWS ── */
-  #news { background: var(--bg2); }
-  .news-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(320px,1fr)); gap: 1.5rem; margin-top: 2.5rem; }
-  .news-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-    overflow: hidden; transition: transform .25s, box-shadow .25s;
-    display: flex; flex-direction: column;
-  }
-  .news-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
-  .news-img { width: 100%; height: 180px; object-fit: cover; background: var(--bg); }
-  .news-img-placeholder {
-    width: 100%; height: 180px; background: linear-gradient(135deg,var(--card),var(--bg));
-    display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--gold);
-  }
-  .news-body { padding: 1.4rem; flex: 1; display: flex; flex-direction: column; }
-  .news-source {
-    font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
-    color: var(--gold); margin-bottom: .5rem; font-weight: 600;
-  }
-  .news-title {
-    font-family: var(--serif); font-size: 1rem; color: var(--text);
-    line-height: 1.45; margin-bottom: .6rem; font-weight: 700;
-  }
-  .news-desc { font-size: .82rem; color: var(--text-muted); line-height: 1.65; flex: 1; }
-  .news-link {
-    display: inline-flex; align-items: center; gap: .4rem;
-    margin-top: 1rem; font-size: .78rem; font-weight: 600;
-    color: var(--gold); text-decoration: none; letter-spacing: .05em; text-transform: uppercase;
-  }
-  .news-link:hover { opacity: .8; }
-  .news-skeleton {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
-  }
-  .skeleton-line {
-    background: linear-gradient(90deg, var(--card), rgba(201,168,76,0.08), var(--card));
-    background-size: 200% 100%; animation: shimmer 1.5s infinite;
-    border-radius: 4px; margin: .5rem 1.4rem;
-  }
-  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-  #news-loading { text-align: center; color: var(--text-muted); padding: 2rem; font-size: .9rem; }
-  .news-tabs { display: flex; gap: .75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-  .news-tab {
-    padding: .4rem 1.1rem; border-radius: 20px; border: 1px solid var(--border);
-    background: transparent; color: var(--text-muted); font-size: .82rem; cursor: pointer;
-    font-family: var(--sans); transition: all .2s;
-  }
-  .news-tab.active, .news-tab:hover { background: var(--gold); color: #1a1a18; border-color: var(--gold); font-weight: 600; }
+  .state { display: none; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
+  .state.active { display: flex; }
 
-  /* ── FOOTER ── */
+  /* --- idle state --- */
+  #state-idle .icon-wrap {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: var(--green-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+  }
+  #state-idle h2 { font-size: 17px; font-weight: 600; }
+  #state-idle p { font-size: 14px; color: var(--muted); max-width: 300px; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 28px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-primary { background: var(--green); color: #fff; }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-primary:active { transform: scale(0.97); }
+  .btn-secondary {
+    background: transparent; color: var(--muted);
+    border: 0.5px solid var(--border);
+    font-size: 13px; padding: 9px 18px;
+  }
+  .btn-secondary:hover { background: var(--bg); }
+
+  /* --- loading state --- */
+  .spinner {
+    width: 48px; height: 48px;
+    border: 3px solid var(--green-light);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #state-loading p { font-size: 14px; color: var(--muted); }
+
+  /* --- result state --- */
+  #state-result { align-items: stretch; }
+
+  .result-header {
+    display: flex; align-items: center; gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .flag-circle {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--green-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; flex-shrink: 0;
+  }
+  .result-header h2 { font-size: 17px; font-weight: 600; line-height: 1.3; }
+  .result-header span { font-size: 13px; color: var(--muted); }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .info-item {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .info-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .info-value { font-size: 14px; font-weight: 500; color: var(--text); word-break: break-all; }
+  .info-item.wide { grid-column: 1 / -1; }
+
+  .map-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 0.5px solid var(--border);
+    margin-bottom: 16px;
+    height: 200px;
+    background: #e8f0f8;
+    position: relative;
+  }
+  .map-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+
+  .accuracy-bar { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+  .accuracy-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+  .action-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .action-row .btn { flex: 1; min-width: 120px; }
+
+  /* --- error state --- */
+  .error-icon { font-size: 40px; }
+  #state-error h2 { font-size: 16px; font-weight: 600; }
+  #state-error p { font-size: 14px; color: var(--muted); max-width: 300px; }
+
   footer {
-    background: #111110; border-top: 1px solid var(--border);
-    padding: 3rem 2rem; text-align: center; color: var(--text-muted); font-size: .85rem;
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
   }
-  footer .footer-logo { font-family: var(--serif); font-size: 1.6rem; color: var(--gold); margin-bottom: .5rem; }
-  footer p { margin-top: .4rem; }
 
-  /* ── VISITOR BADGE ── */
-  #visitor-badge {
-    position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 200;
-    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-    padding: .8rem 1.1rem; font-size: .75rem; color: var(--text-muted);
-    max-width: 220px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    display: none;
-  }
-  #visitor-badge .vb-title { color: var(--gold); font-weight: 600; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .4rem; }
-  #visitor-badge .vb-row { display: flex; justify-content: space-between; gap: .5rem; margin: .15rem 0; }
-  #visitor-badge .vb-val { color: var(--text); font-weight: 500; text-align: right; max-width: 130px; word-break: break-all; }
-
-  /* ── RESPONSIVE ── */
-  @media(max-width:768px){
-    nav { padding: .9rem 1.2rem; }
-    .nav-links { display: none; }
-    #location-banner { padding: .5rem 1.2rem; }
-    section { padding: 3.5rem 1.2rem; }
-    .about-grid { grid-template-columns: 1fr; gap: 2rem; }
-    .how-grid { grid-template-columns: 1fr; }
-    .hero h1 { font-size: 2.4rem; }
+  @media (max-width: 420px) {
+    .info-grid { grid-template-columns: 1fr; }
+    .info-item.wide { grid-column: 1; }
   }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-logo">Chat<span>Online</span></div>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#platforms">Platforms</a></li>
-    <li><a href="#news">News</a></li>
-  </ul>
-</nav>
+<header>
+  <div class="logo">📍</div>
+  <h1>Find My Location</h1>
+  <p>See your current location, coordinates, and region instantly</p>
+</header>
 
-<!-- LOCATION BANNER -->
-<div id="location-banner">
-  <i class="fa-solid fa-location-dot"></i>
-  <span>Welcome, visitor from</span>
-  <span id="location-text">Detecting location…</span>
-  <span style="margin-left:auto;opacity:.5;font-size:.75rem;" id="device-inline"></span>
+<div class="card">
+
+  <!-- IDLE -->
+  <div id="state-idle" class="state active">
+    <div class="icon-wrap">🌍</div>
+    <h2>Where are you right now?</h2>
+    <p>Click below and allow location access. Your browser handles everything — nothing is stored or shared.</p>
+    <button class="btn btn-primary" onclick="locate()">📡 &nbsp;Find my location</button>
+  </div>
+
+  <!-- LOADING -->
+  <div id="state-loading" class="state">
+    <div class="spinner"></div>
+    <p>Getting your position…</p>
+  </div>
+
+  <!-- RESULT -->
+  <div id="state-result" class="state">
+    <div class="result-header">
+      <div class="flag-circle" id="r-flag">🏳️</div>
+      <div>
+        <h2 id="r-place">—</h2>
+        <span id="r-country">—</span>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Latitude</div>
+        <div class="info-value" id="r-lat">—</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Longitude</div>
+        <div class="info-value" id="r-lng">—</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Altitude</div>
+        <div class="info-value" id="r-alt">—</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Accuracy</div>
+        <div class="info-value" id="r-acc">—</div>
+      </div>
+      <div class="info-item wide">
+        <div class="info-label">Address</div>
+        <div class="info-value" id="r-address">—</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Timezone</div>
+        <div class="info-value" id="r-tz">—</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Local time</div>
+        <div class="info-value" id="r-time">—</div>
+      </div>
+    </div>
+
+    <div class="map-wrap">
+      <iframe id="map-frame" src="" title="Map of your location" loading="lazy"></iframe>
+    </div>
+
+    <div class="accuracy-bar">
+      <div class="accuracy-dot"></div>
+      <span id="r-acc-note">Location found</span>
+    </div>
+
+    <div class="action-row">
+      <button class="btn btn-secondary" onclick="copyCoords()">📋 &nbsp;Copy coords</button>
+      <button class="btn btn-secondary" onclick="openMaps()">🗺️ &nbsp;Open in Maps</button>
+      <button class="btn btn-primary" onclick="locate()">🔄 &nbsp;Refresh</button>
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  <div id="state-error" class="state">
+    <div class="error-icon">🚫</div>
+    <h2 id="err-title">Location access denied</h2>
+    <p id="err-msg">Please allow location permission in your browser and try again.</p>
+    <button class="btn btn-primary" onclick="locate()">Try again</button>
+  </div>
+
 </div>
 
-<!-- HERO -->
-<section class="hero" id="home">
-  <div class="hero-eyebrow">Your Social Universe — All in One Place</div>
-  <h1>Connect. Share. <em>Belong.</em></h1>
-  <p>ChatOnline is your comprehensive guide to the world's leading social platforms — discover how they work, what makes each unique, and jump straight in.</p>
-  <a href="#platforms" class="cta-btn">Let's Connect</a>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="num">7</div><div class="lbl">Platforms</div></div>
-    <div class="hero-stat"><div class="num">5B+</div><div class="lbl">Global Users</div></div>
-    <div class="hero-stat"><div class="num">24/7</div><div class="lbl">Live News</div></div>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section id="about">
-  <div class="container">
-    <div class="section-eyebrow">About ChatOnline</div>
-    <h2 class="section-title">The Modern Social Media Hub</h2>
-    <div class="divider"></div>
-    <div class="about-grid">
-      <div class="about-text">
-        <p>In an era where social media shapes culture, commerce, and communication, ChatOnline serves as your authoritative guide to the digital social landscape. We break down every major platform so you understand not just how to use them — but how they work, who they're for, and what makes each one powerful.</p>
-        <p>From TikTok's algorithmic short-form video engine to Telegram's encrypted messaging infrastructure, we go deep. Our mission is digital literacy — empowering you to navigate social media with clarity and confidence.</p>
-        <p>Whether you're a creator, a business, or simply curious, ChatOnline gives you the knowledge and direct access to every platform that matters.</p>
-        <div class="about-features">
-          <div class="feature-item">
-            <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
-            <div><h4>Privacy Aware</h4><p>We explain each platform's data practices and privacy controls.</p></div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
-            <div><h4>Direct Access</h4><p>One click takes you to the login page of any platform instantly.</p></div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon"><i class="fa-solid fa-newspaper"></i></div>
-            <div><h4>Live Social News</h4><p>Real-time news feed covering everything happening in social media.</p></div>
-          </div>
-        </div>
-      </div>
-      <div class="about-visual">
-        <div class="big-icon"><i class="fa-solid fa-globe"></i></div>
-        <h3>Social Media Intelligence</h3>
-        <p>Understanding the platforms that connect 5 billion people worldwide — their mechanics, their culture, their impact.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section style="background:var(--bg);padding-top:0;">
-  <div class="container">
-    <div class="section-eyebrow">How Social Media Works</div>
-    <h2 class="section-title">The Engine Behind Every Platform</h2>
-    <div class="divider"></div>
-    <div class="how-grid">
-      <div class="how-card">
-        <div class="how-num">01</div>
-        <div class="how-icon"><i class="fa-solid fa-user-plus"></i></div>
-        <h4>Create an Account</h4>
-        <p>Every platform begins with registration — an email, phone number, or third-party sign-in creates your identity on the network.</p>
-      </div>
-      <div class="how-card">
-        <div class="how-num">02</div>
-        <div class="how-icon"><i class="fa-solid fa-network-wired"></i></div>
-        <h4>Build Your Network</h4>
-        <p>Follow, friend, or subscribe to people and pages. Algorithms learn your interests and curate a personalised feed in real time.</p>
-      </div>
-      <div class="how-card">
-        <div class="how-num">03</div>
-        <div class="how-icon"><i class="fa-solid fa-rocket"></i></div>
-        <h4>Create & Engage</h4>
-        <p>Post content — text, photos, videos, stories — and interact through likes, comments, shares, and direct messages to build influence.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PLATFORMS -->
-<section id="platforms">
-  <div class="container">
-    <div class="section-eyebrow">Social Platforms</div>
-    <h2 class="section-title">Every Major Platform, Explained</h2>
-    <div class="divider"></div>
-    <p class="section-sub">Click any platform logo to go directly to its login page. Hover for deeper insights.</p>
-    <div class="platforms-grid">
-
-      <!-- TikTok -->
-      <a href="https://www.tiktok.com/login" target="_blank" class="platform-card tiktok-card">
-        <div class="platform-top">
-          <div class="platform-logo"><i class="fa-brands fa-tiktok"></i></div>
-          <div>
-            <div class="platform-name">TikTok</div>
-            <div class="platform-tag">Short-Form Video</div>
-          </div>
-        </div>
-        <p class="platform-desc">TikTok is a short-form video platform powered by one of the world's most sophisticated AI recommendation engines. Its "For You Page" (FYP) uses machine learning to analyse every interaction — watch time, replays, shares — delivering hyper-personalised content within seconds of joining. Videos range from 15 seconds to 10 minutes, spanning music, comedy, education, and niche subcultures.</p>
-        <div class="platform-stats">
-          <div class="pstat"><strong>1.7B+</strong>Monthly Users</div>
-          <div class="pstat"><strong>150+</strong>Countries</div>
-          <div class="pstat"><strong>95 min</strong>Avg Daily Use</div>
-        </div>
-        <div class="platform-cta">Login to TikTok <i class="fa-solid fa-arrow-right"></i></div>
-      </a>
-
-      <!-- Facebook -->
-      <a href="https://www.facebook.com/login" target="_blank" class="platform-card facebook-card">
-        <div class="platform-top">
-          <div class="platform-logo"><i class="fa-brands fa-facebook-f"></i></div>
-          <div>
-            <div class="platform-name">Facebook</div>
-            <div class="platform-tag">Social Network</div>
-          </div>
-        </div>
-        <p class="platform-desc">Facebook is the world's largest social network, built on the concept of connecting real people with their authentic identities. It powers personal profiles, business pages, groups, events, Marketplace, and Reels. Its News Feed algorithm prioritises "meaningful social interactions" — posts from friends, family, and groups you engage with most. Facebook also underpins a vast advertising ecosystem reaching 2+ billion people.</p>
-        <div class="platform-stats">
-          <div class="pstat"><strong>3.07B</strong>Monthly Users</div>
-          <div class="pstat"><strong>#1</strong>Social Network</div>
-          <div class="pstat"><strong>2004</strong>Founded</div>
-        </div>
-        <div class="platform-cta">Login to Facebook <i class="fa-solid fa-arrow-right"></i></div>
-      </a>
-
-      <!-- Instagram -->
-      <a href="https://www.instagram.com/accounts/login/" target="_blank" class="platform-card instagram-card">
-        <div class="platform-top">
-          <div class="platform-logo"><i class="fa-brands fa-instagram"></i></div>
-          <div>
-            <div class="platform-name">Instagram</div>
-            <div class="platform-tag">Visual Platform</div>
-          </div>
-        </div>
-        <p class="platform-desc">Instagram is a visual-first platform owned by Meta, built around photos, Reels, Stories, and live video. Its Explore page surfaces content from accounts you don't follow using interest-based AI. Instagram is the dominant platform for influencer marketing, fashion, travel, food, and lifestyle content. Reels — Instagram's short-form video answer to TikTok — now drives the majority of the platform's reach and engagement.</p>
-        <div class="platform-stats">
-          <div class="pstat"><strong>2B+</strong>Monthly Users</div>
-          <div class="pstat"><strong>500M</strong>Daily Stories</div>
-          <div class="pstat"><strong>Visual</strong>First Design</div>
-        </div>
-        <div class="platform-cta">Login to Instagram <i class="fa-solid fa-arrow-right"></i></div>
-      </a>
-
-      <!-- WhatsApp -->
-      <a href="https://web.whatsapp.com/" target="_blank" class="platform-card whatsapp-card">
-        <div class="platform-top">
-          <div class="platform-logo"><i class="fa-brands fa-whatsapp"></i></div>
-          <div>
-            <div class="platform-name">WhatsApp</div>
-            <div class="platform-tag">Encrypted Messaging</div>
-          </div>
-        </div>
-        <p class="platform-desc">WhatsApp is the world's leading private messaging app, offering end-to-end encrypted text, voice, video, and document sharing for individuals and groups of up to 1,024 members. Owned by Meta, it operates on a phone-number identity system and requires no username. It is the primary communication tool for billions in South Asia, Latin America, Africa, and Europe. WhatsApp Business adds commerce and customer service capabilities.</p>
-        <div class="platform-stats">
-          <div class="pstat"><strong>2.78B</strong>Monthly Users</div>
-          <div class="pstat"><strong>E2E</strong>Encrypted</div>
-          <div class="pstat"><strong>180+</strong>Countries</div>
-        </div>
-        <div class="platform-cta">Open WhatsApp Web <i class="fa-solid fa-arrow-right"></i></div>
-      </a>
-
-      <!-- Snapchat -->
-      <a href="https://accounts.snapchat.com/accounts/login" target="_blank" class="platform-card snapchat-card">
-        <div class="platform-top">
-          <div class="platform-logo"><i class="fa-brands fa-snapchat"></i></div>
-          <div>
-            <div class="platform-name">Snapchat</div>
-            <div class="platform-tag">Ephemeral Media</div>
-          </div>
-        </div>
-        <p class="platform-desc">Snapchat pioneered the concept of ephemeral content — photos and videos that disappear after viewing. It introduced Stories (now copied by every major platform), AR Lenses, and Snap Map. Snapchat's core audience skews younger (13–24), and its AI features, including My AI chatbot, are deeply integrated. The platform's unique "Streak" mechanic drives daily engagement through social accountability.</p>
-        <div class="platform-stats">
-          <div class="pstat"><strong>800M+</strong>Monthly Users</div>
-          <div class="pstat"><strong>#1</strong>Teen Platform</div>
-          <div class="pstat"><strong>AR</strong>Lenses Leader</div>
-        </div>
-        <div class="platform-cta">Login to Snapchat <i class="fa-solid fa-arrow-right"></i></div>
-      </a>
-
-      <!-- Twitter / X -->
-      <a href="https://x.com/i/flow/login" target="_blank" class="platform-card twitter-card">
-        <div class="platform-top">
-          <div class="platform-logo"><i class="fa-brands fa-x-twitter"></i></div>
-          <div>
-            <div class="platform-name">X (Twitter)</div>
-            <div class="platform-tag">Public Discourse</div>
-          </div>
-        </div>
-        <p class="platform-desc">X, formerly Twitter, is the world's primary public conversation platform — a real-time text-first network where breaking news, political discourse, sports commentary, and cultural moments unfold live. Its chronological and algorithmic feeds surface posts from followed accounts and trending topics. Under Elon Musk, X has introduced premium subscriptions (X Premium), expanded post lengths, and introduced Community Notes for collaborative fact-checking.</p>
-        <div class="platform-stats">
-          <div class="pstat"><strong>600M+</strong>Monthly Users</div>
-          <div class="pstat"><strong>Real-Time</strong>News Hub</div>
-          <div class="pstat"><strong>500M</strong>Tweets/Day</div>
-        </div>
-        <div class="platform-cta">Login to X <i class="fa-solid fa-arrow-right"></i></div>
-      </a>
-
-      <!-- Telegram -->
-      <a href="https://web.telegram.org/" target="_blank" class="platform-card telegram-card">
-        <div class="platform-top">
-          <div class="platform-logo"><i class="fa-brands fa-telegram"></i></div>
-          <div>
-            <div class="platform-name">Telegram</div>
-            <div class="platform-tag">Secure Messaging & Channels</div>
-          </div>
-        </div>
-        <p class="platform-desc">Telegram is a cloud-based messaging platform that combines private chats, large group conversations (up to 200,000 members), and broadcast Channels with no subscriber limit. It is renowned for its speed, file-sharing capabilities (up to 2GB per file), bot ecosystem, and optional Secret Chats with end-to-end encryption. Telegram has become the platform of choice for communities, newsletters, and decentralised movements worldwide.</p>
-        <div class="platform-stats">
-          <div class="pstat"><strong>900M+</strong>Monthly Users</div>
-          <div class="pstat"><strong>200K</strong>Group Limit</div>
-          <div class="pstat"><strong>2GB</strong>File Sharing</div>
-        </div>
-        <div class="platform-cta">Open Telegram Web <i class="fa-solid fa-arrow-right"></i></div>
-      </a>
-
-    </div>
-  </div>
-</section>
-
-<!-- NEWS -->
-<section id="news">
-  <div class="container">
-    <div class="section-eyebrow">Live Feed</div>
-    <h2 class="section-title">Social Media News</h2>
-    <div class="divider"></div>
-    <p class="section-sub" style="margin-bottom:1.5rem;">Latest headlines from the world of social media, platforms, and digital culture.</p>
-    <div class="news-tabs">
-      <button class="news-tab active" onclick="fetchNews('social media')">All</button>
-      <button class="news-tab" onclick="fetchNews('TikTok')">TikTok</button>
-      <button class="news-tab" onclick="fetchNews('Facebook Meta')">Facebook</button>
-      <button class="news-tab" onclick="fetchNews('Instagram')">Instagram</button>
-      <button class="news-tab" onclick="fetchNews('Twitter X Elon')">X / Twitter</button>
-      <button class="news-tab" onclick="fetchNews('Telegram WhatsApp')">Messaging</button>
-    </div>
-    <div id="news-loading">Loading latest news…</div>
-    <div id="news-grid" class="news-grid"></div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">ChatOnline</div>
-  <p>Your gateway to the world's social universe.</p>
-  <p style="margin-top:.75rem;font-size:.78rem;opacity:.5;">© 2025 ChatOnline. All rights reserved.</p>
-</footer>
-
-<!-- VISITOR BADGE (shown to page owner only, hidden from public) -->
-<div id="visitor-badge">
-  <div class="vb-title"><i class="fa-solid fa-eye"></i> Visitor Info</div>
-  <div class="vb-row"><span>IP</span><span class="vb-val" id="vb-ip">—</span></div>
-  <div class="vb-row"><span>Device</span><span class="vb-val" id="vb-device">—</span></div>
-  <div class="vb-row"><span>OS</span><span class="vb-val" id="vb-os">—</span></div>
-  <div class="vb-row"><span>Browser</span><span class="vb-val" id="vb-browser">—</span></div>
-  <div class="vb-row"><span>City</span><span class="vb-val" id="vb-city">—</span></div>
-  <div class="vb-row"><span>Country</span><span class="vb-val" id="vb-country">—</span></div>
-</div>
+<footer>Your location is only shown to you and never sent anywhere.</footer>
 
 <script>
-/* ======================================================
-   VISITOR TRACKING (invisible to public)
-   - Collects: IP, city, country, ISP, device, OS,
-     browser, screen, language, referrer, GPS, UA
-   - Sends data to local Python server → written to data.txt
-   - Falls back to localStorage if server not running
-   - Owner shortcuts: Ctrl+Shift+V = badge, Ctrl+Shift+E = Excel
-   ====================================================== */
+let lat = null, lng = null;
 
-// ▼ PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ▼
-const TRACK_ENDPOINT = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
-let visitorLog = [];
-try { visitorLog = JSON.parse(localStorage.getItem('__co_vlog') || '[]'); } catch(e){}
-let currentVisitor = {};
+function show(id) {
+  ['state-idle','state-loading','state-result','state-error'].forEach(s => {
+    document.getElementById(s).classList.remove('active');
+  });
+  document.getElementById(id).classList.add('active');
+}
 
-async function collectVisitorData() {
-  const ua = navigator.userAgent;
+function locate() {
+  if (!navigator.geolocation) {
+    document.getElementById('err-title').textContent = 'Not supported';
+    document.getElementById('err-msg').textContent = 'Your browser does not support geolocation.';
+    show('state-error'); return;
+  }
+  show('state-loading');
+  navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+    enableHighAccuracy: true, timeout: 12000, maximumAge: 0
+  });
+}
 
-  // ── Device type ──────────────────────────────────────────
-  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
-  const isTablet  = /iPad|Tablet/i.test(ua) && !(/Mobi/i.test(ua));
-  const deviceType = isTablet ? 'Tablet' : isMobile ? 'Mobile' : 'Desktop';
+async function onSuccess(pos) {
+  lat = pos.coords.latitude;
+  lng = pos.coords.longitude;
+  const acc = pos.coords.accuracy;
+  const alt = pos.coords.altitude;
 
-  // ── Operating System ─────────────────────────────────────
-  let os = 'Unknown';
-  if      (/Windows NT 10/.test(ua))  os = 'Windows 10/11';
-  else if (/Windows/.test(ua))        os = 'Windows';
-  else if (/Mac OS X/.test(ua))       os = 'macOS';
-  else if (/Android/.test(ua))        os = 'Android';
-  else if (/iPhone|iPad/.test(ua))    os = 'iOS';
-  else if (/Linux/.test(ua))          os = 'Linux';
+  document.getElementById('r-lat').textContent = lat.toFixed(6);
+  document.getElementById('r-lng').textContent = lng.toFixed(6);
+  document.getElementById('r-alt').textContent = alt != null ? Math.round(alt) + ' m' : 'N/A';
+  document.getElementById('r-acc').textContent = Math.round(acc) + ' m';
+  document.getElementById('r-tz').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  document.getElementById('r-time').textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  document.getElementById('r-acc-note').textContent = `Accurate to within ${Math.round(acc)} metres`;
 
-  // ── Browser ──────────────────────────────────────────────
-  let browser = 'Unknown';
-  if      (/Edg\//.test(ua))          browser = 'Edge';
-  else if (/OPR\/|Opera/.test(ua))    browser = 'Opera';
-  else if (/Chrome\//.test(ua))       browser = 'Chrome';
-  else if (/Firefox\//.test(ua))      browser = 'Firefox';
-  else if (/Safari\//.test(ua))       browser = 'Safari';
+  document.getElementById('map-frame').src =
+    `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.01},${lat-0.01},${lng+0.01},${lat+0.01}&layer=mapnik&marker=${lat},${lng}`;
 
-  // ── Screen ───────────────────────────────────────────────
-  const screenRes = `${window.screen.width}×${window.screen.height}`;
-
-  // ── IP Geolocation (ipapi.co) ────────────────────────────
-  let ip='—', city='—', country='—', region='—', isp='—', lat='—', lon='—';
   try {
-    const r = await fetch('https://ipapi.co/json/');
-    const d = await r.json();
-    ip      = d.ip            || '—';
-    city    = d.city          || '—';
-    country = d.country_name  || '—';
-    region  = d.region        || '—';
-    isp     = d.org           || '—';
-    lat     = d.latitude      || '—';
-    lon     = d.longitude     || '—';
-    document.getElementById('location-text').textContent = `${city}, ${country}`;
-  } catch(e) {
-    document.getElementById('location-text').textContent = 'Location unavailable';
+    const geo = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const d = await geo.json();
+    const a = d.address || {};
+    const city = a.city || a.town || a.village || a.county || '';
+    const country = a.country || '';
+    const state = a.state || a.region || '';
+    const road = a.road ? a.road + (a.house_number ? ' ' + a.house_number : '') : '';
+    const postcode = a.postcode || '';
+
+    document.getElementById('r-place').textContent = [city, state].filter(Boolean).join(', ') || country || 'Unknown place';
+    document.getElementById('r-country').textContent = country;
+    document.getElementById('r-address').textContent = [road, city, postcode, country].filter(Boolean).join(', ') || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
+    const countryCode = (a.country_code || '').toUpperCase();
+    const flag = countryCode.length === 2
+      ? String.fromCodePoint(...[...countryCode].map(c => 0x1F1E0 - 65 + c.charCodeAt(0)))
+      : '📍';
+    document.getElementById('r-flag').textContent = flag;
+  } catch {
+    document.getElementById('r-place').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    document.getElementById('r-country').textContent = 'Could not reverse geocode';
+    document.getElementById('r-address').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    document.getElementById('r-flag').textContent = '📍';
   }
 
-  // ── GPS (browser prompt) ─────────────────────────────────
-  let gpsLat = '—', gpsLon = '—';
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      gpsLat = pos.coords.latitude.toFixed(6);
-      gpsLon = pos.coords.longitude.toFixed(6);
-      currentVisitor.gpsLat = gpsLat;
-      currentVisitor.gpsLon = gpsLon;
-      // Send updated record once GPS resolves
-      sendToServer(currentVisitor);
-    }, () => {});
-  }
+  show('state-result');
+}
 
-  // ── Build visitor record ─────────────────────────────────
-  currentVisitor = {
-    timestamp  : new Date().toISOString(),
-    ip, city, region, country, isp,
-    lat, lon,
-    gpsLat, gpsLon,
-    deviceType, os, browser,
-    screen     : screenRes,
-    language   : navigator.language,
-    referrer   : document.referrer || 'Direct',
-    ua         : ua.substring(0, 200)
+function onError(err) {
+  const msgs = {
+    1: ['Permission denied', 'Please allow location access in your browser settings, then try again.'],
+    2: ['Position unavailable', 'Your device could not determine your location. Try again or check your GPS settings.'],
+    3: ['Request timed out', 'It took too long to get your location. Move to a better signal area and try again.'],
   };
-
-  // ── Update hidden badge ──────────────────────────────────
-  document.getElementById('vb-ip').textContent      = ip;
-  document.getElementById('vb-device').textContent  = deviceType;
-  document.getElementById('vb-os').textContent      = os;
-  document.getElementById('vb-browser').textContent = browser;
-  document.getElementById('vb-city').textContent    = city;
-  document.getElementById('vb-country').textContent = country;
-  document.getElementById('device-inline').textContent = `${deviceType} · ${browser} · ${os}`;
-
-  // ── Save to localStorage (backup) ────────────────────────
-  visitorLog.push(currentVisitor);
-  try { localStorage.setItem('__co_vlog', JSON.stringify(visitorLog)); } catch(e){}
-
-  // ── POST to local Python server → data.txt ───────────────
-  sendToServer(currentVisitor);
+  const [title, msg] = msgs[err.code] || ['Unknown error', 'Something went wrong. Please try again.'];
+  document.getElementById('err-title').textContent = title;
+  document.getElementById('err-msg').textContent = msg;
+  show('state-error');
 }
 
-async function sendToServer(data) {
-  if (!TRACK_ENDPOINT || TRACK_ENDPOINT.includes('PASTE_YOUR')) return;
-  try {
-    await fetch(TRACK_ENDPOINT, {
-      method : 'POST',
-      mode   : 'no-cors', // Required for Google Apps Script from GitHub Pages
-      headers: { 'Content-Type': 'application/json' },
-      body   : JSON.stringify(data)
-    });
-  } catch(e) {
-    // Silently fail — data still saved in localStorage
-  }
-}
-
-// ── Excel export (from localStorage backup) ───────────────
-function exportVisitorExcel() {
-  const log = JSON.parse(localStorage.getItem('__co_vlog') || '[]');
-  if (!log.length) { alert('No visitor data in localStorage yet.'); return; }
-  const ws = XLSX.utils.json_to_sheet(log);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Visitors');
-  XLSX.writeFile(wb, 'ChatOnline_Visitors.xlsx');
-}
-
-// ── Owner keyboard shortcuts ──────────────────────────────
-// Ctrl+Shift+V → toggle hidden visitor badge
-// Ctrl+Shift+E → export Excel from localStorage
-document.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.shiftKey && e.key === 'V') {
-    const b = document.getElementById('visitor-badge');
-    b.style.display = b.style.display === 'block' ? 'none' : 'block';
-  }
-  if (e.ctrlKey && e.shiftKey && e.key === 'E') {
-    exportVisitorExcel();
-  }
-});
-
-collectVisitorData();
-
-/* ======================================================
-   NEWS API — GNews
-   ====================================================== */
-
-const NEWS_API_KEY = 'demo'; // Replace with your GNews or NewsAPI key
-
-async function fetchNews(topic = 'social media') {
-  // Update active tab
-  document.querySelectorAll('.news-tab').forEach(t => t.classList.remove('active'));
-  event && event.target && event.target.classList.add('active');
-
-  const grid = document.getElementById('news-grid');
-  const loading = document.getElementById('news-loading');
-  grid.innerHTML = ''; loading.style.display = 'block'; loading.textContent = 'Loading latest news…';
-
-  // Using NewsData.io free tier (no key needed for basic requests)
-  // Fallback to curated static data if API unavailable
-  try {
-    const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(topic)}&lang=en&max=9&apikey=${NEWS_API_KEY}`;
-    const r = await fetch(url);
-    const d = await r.json();
-
-    if (d.articles && d.articles.length > 0) {
-      renderArticles(d.articles.map(a => ({
-        title: a.title,
-        description: a.description,
-        url: a.url,
-        image: a.image,
-        source: a.source?.name || 'News',
-        publishedAt: a.publishedAt
-      })));
-      loading.style.display = 'none';
-      return;
-    }
-  } catch(e) {}
-
-  // Fallback: NewsAPI.org (replace key)
-  try {
-    const url2 = `https://newsapi.org/v2/everything?q=${encodeURIComponent(topic)}&language=en&sortBy=publishedAt&pageSize=9&apiKey=YOUR_NEWSAPI_KEY`;
-    const r2 = await fetch(url2);
-    const d2 = await r2.json();
-    if (d2.articles && d2.articles.length > 0) {
-      renderArticles(d2.articles);
-      loading.style.display = 'none';
-      return;
-    }
-  } catch(e) {}
-
-  // Static curated fallback
-  loading.style.display = 'none';
-  renderArticles(getFallbackNews(topic));
-}
-
-function getFallbackNews(topic) {
-  const all = [
-    { title: "TikTok Launches New Creator Monetization Tools for 2025", description: "TikTok has unveiled an expanded suite of tools giving creators more ways to earn directly from their content, including tips, subscriptions, and enhanced LIVE gifting.", url: "https://newsroom.tiktok.com", source: "TikTok Newsroom", image: null, icon: '🎵' },
-    { title: "Meta Introduces AI-Powered Ad Targeting Across Facebook and Instagram", description: "Meta's latest AI advertising update promises significantly improved return on ad spend for businesses using its cross-platform targeting tools.", url: "https://about.fb.com", source: "Meta Newsroom", image: null, icon: '📘' },
-    { title: "Instagram Reels Algorithm Update Boosts Original Content Discovery", description: "Instagram has announced that original Reels creators will now receive preferential treatment in the Explore page and feed recommendations.", url: "https://about.instagram.com", source: "Instagram Blog", image: null, icon: '📸' },
-    { title: "WhatsApp Rolls Out Meta AI Integration for All Users", description: "WhatsApp's integration with Meta AI brings an intelligent assistant directly into chats, capable of answering questions, drafting messages, and searching the web.", url: "https://blog.whatsapp.com", source: "WhatsApp Blog", image: null, icon: '💬' },
-    { title: "Snapchat's My AI Reaches 200 Million Users Worldwide", description: "Snapchat's built-in AI chatbot, powered by OpenAI's GPT models, has become one of the fastest-adopted AI features in social media history.", url: "https://newsroom.snap.com", source: "Snap Newsroom", image: null, icon: '👻' },
-    { title: "X (Twitter) Expands Community Notes to Video Content", description: "Elon Musk's X platform is extending its collaborative fact-checking system to video posts, as part of a broader push for platform-level content accuracy.", url: "https://x.com", source: "X News", image: null, icon: '✖️' },
-    { title: "Telegram Surpasses 900 Million Monthly Active Users", description: "Pavel Durov confirmed Telegram has crossed 900 million monthly active users, cementing its place as one of the world's most-used communication platforms.", url: "https://telegram.org/blog", source: "Telegram Blog", image: null, icon: '✈️' },
-    { title: "Social Media Platforms Face New EU Digital Services Act Audits", description: "European regulators have launched compliance audits of major social media platforms under the Digital Services Act, targeting algorithmic transparency.", url: "https://ec.europa.eu", source: "EU Commission", image: null, icon: '🇪🇺' },
-    { title: "Short-Form Video Ad Revenue Expected to Hit $145B by 2026", description: "A new report from Goldman Sachs estimates that short-form video advertising across TikTok, Reels, and YouTube Shorts will reach $145 billion globally.", url: "https://www.goldmansachs.com", source: "Goldman Sachs Research", image: null, icon: '📊' },
-  ];
-  return all;
-}
-
-function renderArticles(articles) {
-  const grid = document.getElementById('news-grid');
-  grid.innerHTML = '';
-  articles.forEach(a => {
-    const card = document.createElement('div');
-    card.className = 'news-card';
-    const dateStr = a.publishedAt ? new Date(a.publishedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
-    card.innerHTML = `
-      ${a.image
-        ? `<img class="news-img" src="${a.image}" alt="${a.title}" onerror="this.outerHTML='<div class=news-img-placeholder>${a.icon||'📰'}</div>'">`
-        : `<div class="news-img-placeholder">${a.icon||'📰'}</div>`
-      }
-      <div class="news-body">
-        <div class="news-source">${a.source?.name || a.source || 'News'} ${dateStr ? '· '+dateStr : ''}</div>
-        <div class="news-title">${a.title}</div>
-        <div class="news-desc">${a.description || ''}</div>
-        <a class="news-link" href="${a.url}" target="_blank">Read Full Story <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-      </div>`;
-    grid.appendChild(card);
+function copyCoords() {
+  if (lat == null) return;
+  navigator.clipboard.writeText(`${lat.toFixed(6)}, ${lng.toFixed(6)}`).then(() => {
+    const btn = event.target;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ &nbsp;Copied!';
+    setTimeout(() => btn.innerHTML = orig, 2000);
   });
 }
 
-// Initial news load
-fetchNews('social media');
-
-/* Smooth nav tab activation */
-document.querySelectorAll('.news-tab').forEach(tab => {
-  tab.addEventListener('click', function() {
-    document.querySelectorAll('.news-tab').forEach(t => t.classList.remove('active'));
-    this.classList.add('active');
-  });
-});
+function openMaps() {
+  if (lat == null) return;
+  window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+}
 </script>
-
 </body>
 </html>
